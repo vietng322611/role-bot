@@ -2,3 +2,4 @@ __pycache__
 osu
 *.env
 config.json
+logs
