@@ -1,12 +1,12 @@
 # Role-Bot
 Role managing bot using csv file
 ## Install
-    Require python >= 3.10  
+- Require python >= 3.10  
     ```
     pip install -r requirements.txt
-    pip install setuptools (if modwall.py failed)
+    pip install setuptools (if modwall.py fail)
     ```
-    Create token.env file like below
+- Create token.env file like below
     ```
     BOT_TOKEN=//your token here
     ```
