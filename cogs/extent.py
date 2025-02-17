@@ -36,7 +36,7 @@ class extent(commands.Cog):
         except Exception as e:
             logger.error("role_create", str(e))
 
-    @app_commands.command(name="role-add", description="Add roles from csv")
+    @app_commands.command(name="role-add", description="Create and add role from csv")
     async def role_add(
         self,
         ctx: discord.Interaction,
@@ -45,25 +45,28 @@ class extent(commands.Cog):
         try:
             file = requests.get(csv_file.url)
             content = list(csv.reader(file.content.decode('utf-8-sig').splitlines()))
-            guild_roles = [str(x) for x in ctx.guild.roles]
             
             guild = ctx.guild
-            total_member_added = 0
+            members_success = set()
             for row in content:
-                role = row[0]
-                if role not in guild_roles:
-                    await guild.create_role(name=role)
+                role = list(filter(lambda x: str(x) == row[0],  guild.roles))
+                if role == []:
+                    role = await guild.create_role(name=row[0])
+                else: role = role[0]
 
                 members = row[1:]
-                filtered_members = list(filter(lambda x: str(x) in members, guild.members))
+                filtered_members = list(filter(
+                    lambda x: str(x) in members or x.display_name in members,
+                    guild.members
+                ))
                 for member in filtered_members:
                     try:
                         await member.add_roles(role)
-                        total_member_added += 1
+                        members_success.add(member)
                     except Exception as e:
                         logger.error("role_add", str(e))
 
-            await ctx.response.send_message(f"Added {len(content)} roles to {total_member_added} members.")
+            await ctx.response.send_message(f"Added {len(content)} roles to {len(members_success)} members.")
         except Exception as e:
             logger.error("role_add", str(e))
 

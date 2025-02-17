@@ -23,10 +23,10 @@ def config(path: str, format: str = None) -> None:
     else: _format = format
 
 def to_file(__p: str, __s: str, _type: str) -> None:
-    __f.write(f"{_format} {__p} -{_type.upper()}- {__s}\n")
+    __f.write(f"{_format} {__p}: -{_type.upper()}- {__s}\n")
 
 def to_stdout(__p: str, __s: str, _type: str, _color: str):
-    print(f"{GREEN}{_format} {RESET}{__p} {_color}-{_type.upper()}- {RESET}{__s}")
+    print(f"{GREEN}{_format} {RESET}{__p}: {_color}-{_type.upper()}- {RESET}{__s}")
 
 def info(__p: str, __s: str) -> None:
     to_stdout(__p, __s, "info", CYAN)
