@@ -45,20 +45,25 @@ class extent(commands.Cog):
         try:
             file = requests.get(csv_file.url)
             content = list(csv.reader(file.content.decode('utf-8-sig').splitlines()))
-
-            members = [x[0] for x in content[1:]]
+            guild_roles = [str(x) for x in ctx.guild.roles]
+            
             guild = ctx.guild
-            filtered_roles = list(filter(lambda x: str(x) in content[0], guild.roles))
-            filtered_members = list(filter(lambda x: str(x) in members, guild.members))
-            failed = 0
-            for member in filtered_members:
-                try:
-                    await member.add_roles(*filtered_roles)
-                except Exception as e:
-                    failed += 1
-                    logger.error("role_add", str(e))
+            total_member_added = 0
+            for row in content:
+                role = row[0]
+                if role not in guild_roles:
+                    await guild.create_role(name=role)
 
-            await ctx.response.send_message(f"Added {len(filtered_roles)} roles to {len(filtered_members) - failed} members.")
+                members = row[1:]
+                filtered_members = list(filter(lambda x: str(x) in members, guild.members))
+                for member in filtered_members:
+                    try:
+                        await member.add_roles(role)
+                        total_member_added += 1
+                    except Exception as e:
+                        logger.error("role_add", str(e))
+
+            await ctx.response.send_message(f"Added {len(content)} roles to {total_member_added} members.")
         except Exception as e:
             logger.error("role_add", str(e))
 
